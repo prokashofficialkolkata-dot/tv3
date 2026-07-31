@@ -2,7 +2,7 @@
 <html>
 <head>
 
-<title>Hameeds TV3</title>
+<title>Hameeds TV Digital Signage</title>
 
 <style>
 
@@ -16,29 +16,25 @@ html, body {
 }
 
 
-.layer {
+/* Images */
 
+.layer {
     position:absolute;
     width:100%;
     height:100%;
-
-    object-fit:cover;
-
+    object-fit:contain;
     opacity:0;
-
     transition:opacity 3s ease-in-out;
-
 }
 
 
 .show {
-
     opacity:1;
-
 }
 
 
-/* Info Boxes */
+
+/* Bottom Weather & Clock Boxes */
 
 .info-box {
 
@@ -50,15 +46,22 @@ html, body {
 
     color:white;
 
-    padding:8px 14px;
+    padding:6px 12px;
 
-    border-radius:10px;
+    border-radius:8px;
 
     font-family:Arial,sans-serif;
+
+    font-size:13px;
+
+    line-height:18px;
+
+    backdrop-filter:blur(5px);
 
     z-index:10;
 
 }
+
 
 
 .weather-box {
@@ -68,11 +71,13 @@ html, body {
 }
 
 
+
 .clock-box {
 
     right:12px;
 
 }
+
 
 
 .big-text {
@@ -94,66 +99,58 @@ html, body {
 </style>
 
 </head>
-
-
 <body>
 
 
 <img id="image1" class="layer">
-
 <img id="image2" class="layer">
 
 
 
-<!-- Weather -->
+<!-- Weather Box Left Bottom -->
 
 <div class="info-box weather-box">
 
 <div class="big-text" id="weather">
-
 🌤 Loading...
-
 </div>
 
-<div class="small-text">
-
+<div class="small-text" id="location">
 📍 Sepang, Selangor
-
 </div>
 
 </div>
 
 
 
-<!-- Clock -->
+<!-- Clock Box Right Bottom -->
 
 <div class="info-box clock-box">
 
 <div class="big-text" id="time">
-
-00:00:00 AM
-
+00:00:00
 </div>
 
-
-<div class="small-text" id="day"></div>
-
-<div class="small-text" id="date"></div>
-
-
+<div class="small-text" id="day">
 </div>
 
+<div class="small-text" id="date">
+</div>
+
+</div>
 
 
 
 <script>
 
 
-// GOOGLE DRIVE API
+// GitHub Images
 
-const GOOGLE_DRIVE_API =
-"https://script.google.com/macros/s/AKfycbyjc8Wo-O6o6ccudFdxMf1A4d2G5lUlMbnLqYgoKwS6RC33W1riXpxsX8wt6Ef--sGP/exec?v=2";
+const OWNER = "prokashofficialkolkata-dot";
 
+const REPO = "tv2";
+
+const FOLDER = "images";
 
 
 let pictures=[];
@@ -163,106 +160,101 @@ let current=0;
 let active=0;
 
 
-
 let img1=document.getElementById("image1");
 
 let img2=document.getElementById("image2");
 
 
 
-
-// LOAD IMAGES
-
-
 async function loadPictures(){
 
 
-    const response = await fetch(GOOGLE_DRIVE_API);
+const url =
+`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FOLDER}`;
 
 
-    let files = await response.json();
+const response = await fetch(url);
 
 
-
-    files.sort((a,b)=>{
-
-
-        let numA=parseInt((a.name.match(/\d+/)||[9999])[0]);
-
-        let numB=parseInt((b.name.match(/\d+/)||[9999])[0]);
-
-
-        return numA-numB;
-
-
-    });
+const files = await response.json();
 
 
 
-    pictures = files.map(file=>file.url);
-    console.log(pictures);
-    console.log("Images Loaded:", pictures);
+pictures = files
+
+.filter(file =>
+
+file.name.toLowerCase().endsWith(".jpg") ||
+
+file.name.toLowerCase().endsWith(".jpeg") ||
+
+file.name.toLowerCase().endsWith(".png")
+
+)
+
+.sort((a, b) => {
+    const numA = parseInt(a.name.match(/\d+/)?.[0] || 0);
+    const numB = parseInt(b.name.match(/\d+/)?.[0] || 0);
+
+    if (numA !== numB) {
+        return numA - numB;
+    }
+
+    return a.name.localeCompare(b.name);
+})
+
+
+.map(file=>file.download_url);
 
 
 
-    showNext();
+showNext();
 
 
 }
 
 
 
-
-
 function showNext(){
 
 
-    if(pictures.length===0) return;
+if(pictures.length===0) return;
 
 
 
-    let nextImage=pictures[current];
+let nextImage=pictures[current];
 
 
 
-    if(active===0){
+if(active===0){
 
 
-        img2.src=nextImage;
+img2.src=nextImage;
 
-        img2.classList.add("show");
+img2.classList.add("show");
 
-        img1.classList.remove("show");
+img1.classList.remove("show");
 
-        active=1;
-
-
-    }
-
-    else{
+active=1;
 
 
-        img1.src=nextImage;
-
-        img1.classList.add("show");
-
-        img2.classList.remove("show");
-
-        active=0;
+}else{
 
 
-    }
+img1.src=nextImage;
+
+img1.classList.add("show");
+
+img2.classList.remove("show");
+
+active=0;
+
+
+}
 
 
 
-    current++;
-
-
-    if(current>=pictures.length){
-
-        current=0;
-
-    }
+current = (current + 1) % pictures.length;
 
 
 }
@@ -272,15 +264,15 @@ function showNext(){
 loadPictures();
 
 
+// 20 seconds
+
 setInterval(showNext,20000);
 
 
 
 
 
-
-// CLOCK 12 HOUR FORMAT
-
+// CLOCK
 
 function updateClock(){
 
@@ -290,17 +282,17 @@ let now=new Date();
 
 
 document.getElementById("time").innerHTML =
-
-now.toLocaleTimeString("en-MY",{
-
+    
+now.toLocaleTimeString("en-US",{
+    
 hour:"2-digit",
-
+    
 minute:"2-digit",
-
+    
 second:"2-digit",
-
+    
 hour12:true
-
+    
 });
 
 
@@ -331,7 +323,6 @@ year:"numeric"
 }
 
 
-
 setInterval(updateClock,1000);
 
 updateClock();
@@ -340,33 +331,32 @@ updateClock();
 
 
 
-
-// WEATHER
-
+// WEATHER - SEPANG
 
 async function updateWeather(){
 
 
-const url=
+const url =
 
-"https://api.open-meteo.com/v1/forecast?latitude=2.69&longitude=101.74&current=temperature_2m&timezone=Asia%2FKuala_Lumpur";
-
-
-
-const response=await fetch(url);
+"https://api.open-meteo.com/v1/forecast?latitude=2.69&longitude=101.74&current=temperature_2m,weather_code&timezone=Asia%2FKuala_Lumpur";
 
 
-const data=await response.json();
+const response = await fetch(url);
+
+
+const data = await response.json();
 
 
 
-document.getElementById("weather").innerHTML=
+let temp = data.current.temperature_2m;
 
-"🌤 "+data.current.temperature_2m+"°C";
+
+document.getElementById("weather").innerHTML =
+
+"🌤 " + temp + "°C";
 
 
 }
-
 
 
 updateWeather();
