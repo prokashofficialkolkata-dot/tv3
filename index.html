@@ -2,7 +2,7 @@
 <html>
 <head>
 
-<title>Hameeds TV Digital Signage</title>
+<title>Hameeds TV3</title>
 
 <style>
 
@@ -16,25 +16,29 @@ html, body {
 }
 
 
-/* Images */
-
 .layer {
+
     position:absolute;
     width:100%;
     height:100%;
-    object-fit:contain;
+
+    object-fit:cover;
+
     opacity:0;
+
     transition:opacity 3s ease-in-out;
+
 }
 
 
 .show {
+
     opacity:1;
+
 }
 
 
-
-/* Bottom Weather & Clock Boxes */
+/* Info Boxes */
 
 .info-box {
 
@@ -46,22 +50,15 @@ html, body {
 
     color:white;
 
-    padding:6px 12px;
+    padding:8px 14px;
 
-    border-radius:8px;
+    border-radius:10px;
 
     font-family:Arial,sans-serif;
-
-    font-size:13px;
-
-    line-height:18px;
-
-    backdrop-filter:blur(5px);
 
     z-index:10;
 
 }
-
 
 
 .weather-box {
@@ -71,13 +68,11 @@ html, body {
 }
 
 
-
 .clock-box {
 
     right:12px;
 
 }
-
 
 
 .big-text {
@@ -99,54 +94,66 @@ html, body {
 </style>
 
 </head>
+
+
 <body>
 
 
 <img id="image1" class="layer">
+
 <img id="image2" class="layer">
 
 
 
-<!-- Weather Box Left Bottom -->
+<!-- Weather -->
 
 <div class="info-box weather-box">
 
 <div class="big-text" id="weather">
+
 🌤 Loading...
+
 </div>
 
-<div class="small-text" id="location">
+<div class="small-text">
+
 📍 Sepang, Selangor
-</div>
 
 </div>
 
+</div>
 
 
-<!-- Clock Box Right Bottom -->
+
+<!-- Clock -->
 
 <div class="info-box clock-box">
 
 <div class="big-text" id="time">
-00:00:00
-</div>
 
-<div class="small-text" id="day">
-</div>
-
-<div class="small-text" id="date">
-</div>
+00:00:00 AM
 
 </div>
+
+
+<div class="small-text" id="day"></div>
+
+<div class="small-text" id="date"></div>
+
+
+</div>
+
 
 
 
 <script>
 
 
-// GitHub Images
+// GOOGLE DRIVE API
 
-const GOOGLE_DRIVE_API = "https://script.google.com/macros/s/AKfycbyjc8Wo-O6o6ccudFdxMf1A4d2G5lUlMbnLqYgoKwS6RC33W1riXpxsX8wt6Ef--sGP/exec";
+const GOOGLE_DRIVE_API = 
+"https://script.google.com/macros/s/AKfycbyjc8Wo-O6o6ccudFdxMf1A4d2G5lUlMbnLqYgoKwS6RC33W1riXpxsX8wt6Ef--sGP/exec";
+
 
 
 let pictures=[];
@@ -156,78 +163,104 @@ let current=0;
 let active=0;
 
 
+
 let img1=document.getElementById("image1");
 
 let img2=document.getElementById("image2");
 
 
 
+
+// LOAD IMAGES
+
+
 async function loadPictures(){
 
+
     const response = await fetch(GOOGLE_DRIVE_API);
+
 
     let files = await response.json();
 
 
+
     files.sort((a,b)=>{
 
-        let numA = parseInt((a.name.match(/\d+/)||[9999])[0]);
-        let numB = parseInt((b.name.match(/\d+/)||[9999])[0]);
+
+        let numA=parseInt((a.name.match(/\d+/)||[9999])[0]);
+
+        let numB=parseInt((b.name.match(/\d+/)||[9999])[0]);
+
 
         return numA-numB;
 
+
     });
+
 
 
     pictures = files.map(file=>file.url);
 
 
+
     showNext();
 
+
 }
+
+
 
 
 
 function showNext(){
 
 
-if(pictures.length===0) return;
+    if(pictures.length===0) return;
 
 
 
-let nextImage=pictures[current];
+    let nextImage=pictures[current];
 
 
 
-if(active===0){
+    if(active===0){
 
 
-img2.src=nextImage;
+        img2.src=nextImage;
 
-img2.classList.add("show");
+        img2.classList.add("show");
 
-img1.classList.remove("show");
+        img1.classList.remove("show");
 
-active=1;
-
-
-}else{
+        active=1;
 
 
-img1.src=nextImage;
+    }
 
-img1.classList.add("show");
-
-img2.classList.remove("show");
-
-active=0;
+    else{
 
 
-}
+        img1.src=nextImage;
+
+        img1.classList.add("show");
+
+        img2.classList.remove("show");
+
+        active=0;
+
+
+    }
 
 
 
-current = (current + 1) % pictures.length;
+    current++;
+
+
+    if(current>=pictures.length){
+
+        current=0;
+
+    }
 
 
 }
@@ -237,15 +270,15 @@ current = (current + 1) % pictures.length;
 loadPictures();
 
 
-// 20 seconds
-
 setInterval(showNext,20000);
 
 
 
 
 
-// CLOCK
+
+// CLOCK 12 HOUR FORMAT
+
 
 function updateClock(){
 
@@ -255,17 +288,17 @@ let now=new Date();
 
 
 document.getElementById("time").innerHTML =
-    
-now.toLocaleTimeString("en-US",{
-    
+
+now.toLocaleTimeString("en-MY",{
+
 hour:"2-digit",
-    
+
 minute:"2-digit",
-    
+
 second:"2-digit",
-    
+
 hour12:true
-    
+
 });
 
 
@@ -296,6 +329,7 @@ year:"numeric"
 }
 
 
+
 setInterval(updateClock,1000);
 
 updateClock();
@@ -304,32 +338,33 @@ updateClock();
 
 
 
-// WEATHER - SEPANG
+
+// WEATHER
+
 
 async function updateWeather(){
 
 
-const url =
+const url=
 
-"https://api.open-meteo.com/v1/forecast?latitude=2.69&longitude=101.74&current=temperature_2m,weather_code&timezone=Asia%2FKuala_Lumpur";
-
-
-const response = await fetch(url);
-
-
-const data = await response.json();
+"https://api.open-meteo.com/v1/forecast?latitude=2.69&longitude=101.74&current=temperature_2m&timezone=Asia%2FKuala_Lumpur";
 
 
 
-let temp = data.current.temperature_2m;
+const response=await fetch(url);
 
 
-document.getElementById("weather").innerHTML =
+const data=await response.json();
 
-"🌤 " + temp + "°C";
+
+
+document.getElementById("weather").innerHTML=
+
+"🌤 "+data.current.temperature_2m+"°C";
 
 
 }
+
 
 
 updateWeather();
