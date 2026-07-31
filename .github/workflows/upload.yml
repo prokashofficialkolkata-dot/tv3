@@ -1,0 +1,27 @@
+name: Upload Images
+
+on:
+  repository_dispatch:
+    types:
+      - upload-image
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Upload image to repository
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.UPLOAD_TOKEN }}
+          script: |
+            const filename = context.payload.client_payload.filename;
+            const image = context.payload.client_payload.image;
+
+            await github.rest.repos.createOrUpdateFileContents({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              path: `images/${filename}`,
+              message: `Upload ${filename}`,
+              content: image
+            });
