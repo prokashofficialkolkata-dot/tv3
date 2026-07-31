@@ -1,4 +1,3 @@
-const GOOGLE_UPLOAD_URL = "https://script.google.com/macros/s/AKfycbyjc8Wo-O6o6ccudFdxMf1A4d2G5lUlMbnLqYgoKwS6RC33W1riXpxsX8wt6Ef--sGP/exec";
 const GITHUB_OWNER = "prokashofficialkolkata-dot";
 const GITHUB_REPO = "tv3";
 const IMAGE_FOLDER = "images";
@@ -21,23 +20,22 @@ async function uploadImages() {
         const fileName = Date.now() + "-" + file.name;
 
         await fetch(
-    "https://api.github.com/repos/" + GITHUB_OWNER + "/" + GITHUB_REPO + "/dispatches",
-    {
-        method: "POST",
-        headers: {
-            "Accept": "application/vnd.github+json",
-            "Content-Type": "application/json",
-            "Authorization": "Bearer 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"
-        },
-        body: JSON.stringify({
-            event_type: "upload-image",
-            client_payload: {
-                filename: fileName,
-                image: base64.split(",")[1]
+            "https://api.github.com/repos/" + GITHUB_OWNER + "/" + GITHUB_REPO + "/dispatches",
+            {
+                method: "POST",
+                headers: {
+                    "Accept": "application/vnd.github+json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    event_type: "upload-image",
+                    client_payload: {
+                        filename: fileName,
+                        image: base64.split(",")[1]
+                    }
+                })
             }
-        })
-    }
-);
+        );
 
     }
 
