@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Hameeds TV Admin Panel</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#111827;
+    color:white;
+}
+
+.container{
+    max-width:700px;
+    margin:auto;
+    padding:20px;
+}
+
+h1{
+    text-align:center;
+    color:#facc15;
+}
+
+.card{
+    background:#1f2937;
+    padding:20px;
+    border-radius:15px;
+    margin-top:20px;
+}
+
+input,button{
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border-radius:8px;
+    border:none;
+    font-size:16px;
+}
+
+button{
+    background:#facc15;
+    color:#000;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+#preview img{
+    width:120px;
+    height:80px;
+    object-fit:cover;
+    margin:5px;
+    border-radius:8px;
+}
+
+#message{
+    margin-top:15px;
+    text-align:center;
+    color:#22c55e;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Hameeds TV Admin Panel</h1>
+
+
+<div class="card">
+
+<h3>Upload Slide Images</h3>
+
+<input type="file" id="images" multiple accept="image/*">
+
+<button onclick="uploadImages()">
+Upload All Images
+</button>
+
+
+<div id="message"></div>
+
+</div>
+
+
+
+<div class="card">
+
+<h3>Current Images</h3>
+
+<div id="preview"></div>
+
+</div>
+
+
+</div>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>

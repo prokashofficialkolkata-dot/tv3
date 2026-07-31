@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Hameeds TV Digital Signage</title>
+
+<style>
+
+html, body {
+    margin:0;
+    padding:0;
+    width:100%;
+    height:100%;
+    background:black;
+    overflow:hidden;
+}
+
+
+/* Images */
+
+.layer {
+    position:absolute;
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    opacity:0;
+    transition:opacity 3s ease-in-out;
+}
+
+
+.show {
+    opacity:1;
+}
+
+
+
+/* Bottom Weather & Clock Boxes */
+
+.info-box {
+
+    position:fixed;
+
+    bottom:12px;
+
+    background:rgba(0,0,0,0.60);
+
+    color:white;
+
+    padding:6px 12px;
+
+    border-radius:8px;
+
+    font-family:Arial,sans-serif;
+
+    font-size:13px;
+
+    line-height:18px;
+
+    backdrop-filter:blur(5px);
+
+    z-index:10;
+
+}
+
+
+
+.weather-box {
+
+    left:12px;
+
+}
+
+
+
+.clock-box {
+
+    right:12px;
+
+}
+
+
+
+.big-text {
+
+    font-size:18px;
+
+    font-weight:bold;
+
+}
+
+
+.small-text {
+
+    font-size:12px;
+
+}
+
+
+</style>
+
+</head>
+<body>
+
+
+<img id="image1" class="layer">
+<img id="image2" class="layer">
+
+
+
+<!-- Weather Box Left Bottom -->
+
+<div class="info-box weather-box">
+
+<div class="big-text" id="weather">
+🌤 Loading...
+</div>
+
+<div class="small-text" id="location">
+📍 Sepang, Selangor
+</div>
+
+</div>
+
+
+
+<!-- Clock Box Right Bottom -->
+
+<div class="info-box clock-box">
+
+<div class="big-text" id="time">
+00:00:00
+</div>
+
+<div class="small-text" id="day">
+</div>
+
+<div class="small-text" id="date">
+</div>
+
+</div>
+
+
+
+<script>
+
+
+// GitHub Images
+
+const OWNER = "prokashofficialkolkata-dot";
+
+const REPO = "tv2";
+
+const FOLDER = "images";
+
+
+let pictures=[];
+
+let current=0;
+
+let active=0;
+
+
+let img1=document.getElementById("image1");
+
+let img2=document.getElementById("image2");
+
+
+
+async function loadPictures(){
+
+
+const url =
+`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FOLDER}`;
+
+
+const response = await fetch(url);
+
+
+const files = await response.json();
+
+
+
+pictures = files
+
+.filter(file =>
+
+file.name.toLowerCase().endsWith(".jpg") ||
+
+file.name.toLowerCase().endsWith(".jpeg") ||
+
+file.name.toLowerCase().endsWith(".png")
+
+)
+
+.sort((a, b) => {
+    const numA = parseInt(a.name.match(/\d+/)?.[0] || 0);
+    const numB = parseInt(b.name.match(/\d+/)?.[0] || 0);
+
+    if (numA !== numB) {
+        return numA - numB;
+    }
+
+    return a.name.localeCompare(b.name);
+})
+
+
+.map(file=>file.download_url);
+
+
+
+showNext();
+
+
+}
+
+
+
+function showNext(){
+
+
+if(pictures.length===0) return;
+
+
+
+let nextImage=pictures[current];
+
+
+
+if(active===0){
+
+
+img2.src=nextImage;
+
+img2.classList.add("show");
+
+img1.classList.remove("show");
+
+active=1;
+
+
+}else{
+
+
+img1.src=nextImage;
+
+img1.classList.add("show");
+
+img2.classList.remove("show");
+
+active=0;
+
+
+}
+
+
+
+current = (current + 1) % pictures.length;
+
+
+}
+
+
+
+loadPictures();
+
+
+// 20 seconds
+
+setInterval(showNext,20000);
+
+
+
+
+
+// CLOCK
+
+function updateClock(){
+
+
+let now=new Date();
+
+
+
+document.getElementById("time").innerHTML =
+    
+now.toLocaleTimeString("en-US",{
+    
+hour:"2-digit",
+    
+minute:"2-digit",
+    
+second:"2-digit",
+    
+hour12:true
+    
+});
+
+
+
+document.getElementById("day").innerHTML =
+
+now.toLocaleDateString("en-MY",{
+
+weekday:"long"
+
+});
+
+
+
+document.getElementById("date").innerHTML =
+
+now.toLocaleDateString("en-MY",{
+
+day:"2-digit",
+
+month:"short",
+
+year:"numeric"
+
+});
+
+
+}
+
+
+setInterval(updateClock,1000);
+
+updateClock();
+
+
+
+
+
+// WEATHER - SEPANG
+
+async function updateWeather(){
+
+
+const url =
+
+"https://api.open-meteo.com/v1/forecast?latitude=2.69&longitude=101.74&current=temperature_2m,weather_code&timezone=Asia%2FKuala_Lumpur";
+
+
+const response = await fetch(url);
+
+
+const data = await response.json();
+
+
+
+let temp = data.current.temperature_2m;
+
+
+document.getElementById("weather").innerHTML =
+
+"🌤 " + temp + "°C";
+
+
+}
+
+
+updateWeather();
+
+
+setInterval(updateWeather,600000);
+
+
+
+</script>
+
+
+</body>
+
+</html>
