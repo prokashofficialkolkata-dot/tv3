@@ -146,11 +146,7 @@ html, body {
 
 // GitHub Images
 
-const OWNER = "prokashofficialkolkata-dot";
-
-const REPO = "tv3";
-
-const FOLDER = "images";
+const GOOGLE_DRIVE_API = "https://script.google.com/macros/s/AKfycbyjc8Wo-O6o6ccudFdxMf1A4d2G5lUlMbnLqYgoKwS6RC33W1riXpxsX8wt6Ef--sGP/exec";
 
 
 let pictures=[];
@@ -168,48 +164,25 @@ let img2=document.getElementById("image2");
 
 async function loadPictures(){
 
+    const response = await fetch(GOOGLE_DRIVE_API);
 
-const url =
-`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FOLDER}`;
-
-
-const response = await fetch(url);
+    let files = await response.json();
 
 
-const files = await response.json();
+    files.sort((a,b)=>{
+
+        let numA = parseInt((a.name.match(/\d+/)||[9999])[0]);
+        let numB = parseInt((b.name.match(/\d+/)||[9999])[0]);
+
+        return numA-numB;
+
+    });
 
 
-
-pictures = files
-
-.filter(file =>
-
-file.name.toLowerCase().endsWith(".jpg") ||
-
-file.name.toLowerCase().endsWith(".jpeg") ||
-
-file.name.toLowerCase().endsWith(".png")
-
-)
-
-.sort((a, b) => {
-    const numA = parseInt(a.name.match(/\d+/)?.[0] || 0);
-    const numB = parseInt(b.name.match(/\d+/)?.[0] || 0);
-
-    if (numA !== numB) {
-        return numA - numB;
-    }
-
-    return a.name.localeCompare(b.name);
-})
+    pictures = files.map(file=>file.url);
 
 
-.map(file=>file.download_url);
-
-
-
-showNext();
-
+    showNext();
 
 }
 
