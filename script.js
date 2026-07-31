@@ -27,14 +27,14 @@ async function uploadImages() {
     "Accept": "application/vnd.github+json",
     "Content-Type": "application/json",
     "Authorization": "Bearer YOUR_TOKEN"
-}
-                body: JSON.stringify({
-                    event_type: "upload-image",
-                    client_payload: {
-                        filename: fileName,
-                        image: base64.split(",")[1]
-                    }
-                })
+},
+body: JSON.stringify({
+    event_type: "upload-image",
+    client_payload: {
+        filename: fileName,
+        image: base64.split(",")[1]
+    }
+})
             }
         );
 
