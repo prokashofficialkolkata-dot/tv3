@@ -24,10 +24,10 @@ async function uploadImages() {
             {
                 method: "POST",
                 headers: {
-                    "Accept": "application/vnd.github+json",
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer YOUR_TOKEN"
-                },
+    "Accept": "application/vnd.github+json",
+    "Content-Type": "application/json",
+    "Authorization": "Bearer YOUR_TOKEN"
+}
                 body: JSON.stringify({
                     event_type: "upload-image",
                     client_payload: {
