@@ -20,23 +20,23 @@ async function uploadImages() {
         const fileName = Date.now() + "-" + file.name;
 
         await fetch(
-            "https://api.github.com/repos/" + GITHUB_OWNER + "/" + GITHUB_REPO + "/dispatches",
-            {
-                method: "POST",
-                headers: {
-    "Accept": "application/vnd.github+json",
-    "Content-Type": "application/json",
-    "Authorization": "Bearer YOUR_TOKEN"
-},
-body: JSON.stringify({
-    event_type: "upload-image",
-    client_payload: {
-        filename: fileName,
-        image: base64.split(",")[1]
-    }
-})
+    "https://api.github.com/repos/" + GITHUB_OWNER + "/" + GITHUB_REPO + "/dispatches",
+    {
+        method: "POST",
+        headers: {
+            "Accept": "application/vnd.github+json",
+            "Content-Type": "application/json",
+            "Authorization": "Bearer YOUR_TOKEN"
+        },
+        body: JSON.stringify({
+            event_type: "upload-image",
+            client_payload: {
+                filename: fileName,
+                image: base64.split(",")[1]
             }
-        );
+        })
+    }
+);
 
     }
 
