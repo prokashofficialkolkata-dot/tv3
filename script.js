@@ -1,3 +1,4 @@
+const GOOGLE_UPLOAD_URL = "https://script.google.com/macros/s/AKfycbyjc8Wo-O6o6ccudFdxMf1A4d2G5lUlMbnLqYgoKwS6RC33W1riXpxsX8wt6Ef--sGP/exec";
 const GITHUB_OWNER = "prokashofficialkolkata-dot";
 const GITHUB_REPO = "tv3";
 const IMAGE_FOLDER = "images";
