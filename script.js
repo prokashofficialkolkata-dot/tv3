@@ -26,7 +26,7 @@ async function uploadImages() {
         headers: {
             "Accept": "application/vnd.github+json",
             "Content-Type": "application/json",
-            "Authorization": "Bearer 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"
+            "Authorization": "Bearer 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"
         },
         body: JSON.stringify({
             event_type: "upload-image",
